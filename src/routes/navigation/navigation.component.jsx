@@ -1,39 +1,49 @@
-import { Link, Outlet } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import { Fragment, useContext } from "react";
 import { ReactComponent as CrwnLogo } from "../../assets/crown.svg";
-import "./navigation.styles.scss";
+import {NavigationContainer, NavLinksContainer, NavLink, LogoContainer} from "./navigation.styles.jsx";
 import { signOutUser } from "../../utils/firebase/firebase.utils";
 
 import { UserContext } from "../../context/user.context";
+import { CartContext } from "../../context/cart.context";
+
+import CartIcon from "../../components/cart-icon/cart-icon.component";
+import CartDropdown from "../../components/cart-dropdown/cart-dropdown.component";
+
 
 const Navigation = () => {
   const { currentUser } = useContext(UserContext);
+  const { isCartOpen } = useContext(CartContext);
 
   return (
     <Fragment>
-      <div className="navigation">
-        <Link className="logo-container" to="/">
+    <NavigationContainer>
+        <LogoContainer to="/">
           <CrwnLogo className="logo" />
-        </Link>
-        <div className="nav-links-container">
-          <Link className="nav-link" to="/shop">
+        </LogoContainer>
+        <NavLinksContainer>
+          <NavLink to="/shop">
             Shop
-          </Link>
-          <Link className="nav-link" to="/contact">
+          </NavLink>
+          <NavLink to="/contact">
             Contact
-          </Link>
+          </NavLink>
           {currentUser ? (
-            <span className="nav-link" onClick={signOutUser}>
+            <NavLink as='span' onClick={signOutUser}>
               Sign Out
-            </span>
+            </NavLink>
           ) : (
-            <Link className="nav-link" to="/auth">
+            <NavLink to="/auth">
               Sign In
-            </Link>
+            </NavLink>
           )}
-        </div>
-      </div>
-      <Outlet />
+
+          <CartIcon />
+        </NavLinksContainer>
+
+        {isCartOpen && <CartDropdown />}
+    </NavigationContainer>
+    <Outlet />
     </Fragment>
   );
 };
